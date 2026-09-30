@@ -1,4 +1,4 @@
-<p align="center"><img src="assets/arabic-animals-logo.png" alt="Fox illustration from the Arabic Animals game" width="180"></p>
+![Arabic Animals](arabic-animals-logo.png)
 
 # Arabic Animals
 
