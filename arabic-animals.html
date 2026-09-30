@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Arabic Animal Challenge — 50 Rounds</title>
+<style>
+:root{
+  --bg:#f3efe7;
+  --paper:#fffdf8;
+  --ink:#171717;
+  --muted:#6c675f;
+  --line:#d8d0c3;
+  --accent:#176b68;
+  --accent2:#9c4a32;
+  --gold:#b48a34;
+  --correct:#276344;
+  --wrong:#9b3d35;
+  --soft:#eee7dc;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 10% 0%,rgba(23,107,104,.10),transparent 28rem),
+    radial-gradient(circle at 96% 7%,rgba(180,138,52,.10),transparent 26rem),
+    var(--bg);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  line-height:1.5
+}
+button{font:inherit}
+.wrap{width:min(900px,92vw);margin:auto;padding:44px 0 58px}
+.topline{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px}
+.tag{
+  border:1px solid var(--ink);border-radius:999px;padding:6px 10px;
+  font-size:.74rem;font-weight:850;letter-spacing:.08em;text-transform:uppercase
+}
+h1{
+  font-size:clamp(2.8rem,7vw,5.5rem);
+  line-height:.92;letter-spacing:-.055em;
+  margin:.2rem 0 .8rem;max-width:780px
+}
+.subtitle{font-size:1.08rem;max-width:760px;color:#36322f}
+.panel{
+  margin-top:24px;background:rgba(255,253,248,.96);border:1px solid var(--line);
+  border-radius:24px;padding:24px;box-shadow:0 16px 42px rgba(55,42,20,.08)
+}
+.status{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+.kicker{
+  font-size:.76rem;text-transform:uppercase;letter-spacing:.09em;
+  color:var(--muted);font-weight:850
+}
+.progress{height:10px;background:#e8e1d6;border-radius:999px;overflow:hidden;margin-top:7px}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--gold));transition:width .25s ease}
+.score{font-weight:900;white-space:nowrap}
+.animal-card{
+  margin:24px auto 18px;
+  min-height:280px;
+  display:grid;
+  place-items:center;
+  background:#f5efe5;
+  border:1px solid var(--line);
+  border-radius:22px;
+  position:relative;
+  overflow:hidden;
+}
+.animal-card::before{
+  content:"";
+  position:absolute;
+  width:180px;height:180px;border-radius:50%;
+  background:rgba(23,107,104,.07);
+  filter:blur(2px);
+}
+.animal-emoji{
+  position:relative;
+  font-size:clamp(7rem,20vw,12rem);
+  line-height:1;
+  user-select:none;
+  filter:drop-shadow(0 8px 10px rgba(0,0,0,.08));
+}
+.prompt{text-align:center;font-size:1.05rem;margin:8px 0 16px;font-weight:700}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:680px){.options{grid-template-columns:1fr}}
+.option{
+  width:100%;
+  border:1px solid var(--line);
+  background:white;
+  color:var(--ink);
+  border-radius:16px;
+  padding:17px 18px;
+  cursor:pointer;
+  min-height:74px;
+  text-align:center;
+  transition:.15s ease
+}
+.option:hover:not(:disabled){border-color:var(--accent);transform:translateY(-1px)}
+.option:focus-visible{outline:3px solid rgba(23,107,104,.22);outline-offset:2px}
+.ar-choice{
+  direction:rtl;
+  font-family:"Geeza Pro","Noto Naskh Arabic","Arial",sans-serif;
+  font-size:1.7rem;
+  font-weight:800;
+}
+.option.correct{border-color:var(--correct);background:#edf7f0}
+.option.wrong{border-color:var(--wrong);background:#fbefed}
+.option:disabled{color:var(--ink);cursor:default}
+.feedback{
+  margin-top:18px;padding:16px 18px;border-radius:16px;
+  background:#f1ede6;border-left:5px solid var(--gold)
+}
+.feedback.correct{border-left-color:var(--correct)}
+.feedback.wrong{border-left-color:var(--wrong)}
+.feedback h3{margin:0 0 5px}
+.feedback p{margin:.3rem 0}
+.answer-ar{
+  direction:rtl;display:inline-block;
+  font-family:"Geeza Pro","Noto Naskh Arabic","Arial",sans-serif;
+  font-size:1.3rem;font-weight:800
+}
+.actions{
+  display:flex;justify-content:space-between;gap:12px;align-items:center;
+  margin-top:18px;flex-wrap:wrap
+}
+.primary{
+  border:0;border-radius:999px;padding:12px 18px;
+  background:var(--accent);color:white;font-weight:850;cursor:pointer
+}
+.primary:disabled{opacity:.42;cursor:not-allowed}
+.legend{font-size:.84rem;color:var(--muted)}
+.hidden{display:none}
+.end{text-align:center;padding:18px 0 5px}
+.end h2{font-size:2.15rem;margin:.25rem 0}
+.bigscore{font-size:4.1rem;font-weight:950;color:var(--accent);line-height:1.05}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px auto;max-width:520px}
+.stat{background:white;border:1px solid var(--line);border-radius:14px;padding:14px}
+.stat b{display:block;font-size:1.45rem}
+.note{background:#1e1d1a;color:white;border-radius:18px;padding:18px;text-align:left}
+footer{text-align:center;color:var(--muted);font-size:.84rem;margin-top:26px}
+
+.wrap{position:relative}.topline{padding-right:84px;min-height:64px;align-content:flex-start;align-items:flex-start}
+.course-home{position:absolute;top:44px;right:0;display:block;width:64px;padding:5px;border:1px solid #b6c4d6;border-radius:10px;background:#f4f7fb;line-height:0}
+.course-home:hover{background:white}.course-home img{display:block;width:52px;height:52px}
+.course-home:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="course-home" href="https://l1001.vt.domains/" aria-label="Return to course home" title="Course home"><img src="l1001-home.svg" alt="L1001 home" width="52" height="52"></a>
+  <div class="topline">
+    <span class="tag">Arabic Vocabulary</span>
+    <span class="tag">Animals</span>
+    <span class="tag">50 Rounds</span>
+  </div>
+
+  <h1>Name That Animal</h1>
+  <p class="subtitle">
+    Look at the animal and choose the correct Arabic word. No English clues until after you answer.
+  </p>
+
+  <div class="panel">
+    <div class="status">
+      <div>
+        <div class="kicker" id="roundLabel">Round 1 of 50</div>
+        <div class="progress"><div id="bar"></div></div>
+      </div>
+      <div class="score">Score: <span id="score">0</span> / 50</div>
+    </div>
+
+    <div id="game">
+      <div class="animal-card" aria-label="Animal image">
+        <div class="animal-emoji" id="animalEmoji" aria-hidden="true"></div>
+      </div>
+
+      <div class="prompt">Which Arabic word names this animal?</div>
+      <div class="options" id="options"></div>
+
+      <div class="feedback hidden" id="feedback" aria-live="polite">
+        <h3 id="feedbackTitle"></h3>
+        <p id="feedbackBody"></p>
+      </div>
+
+      <div class="actions">
+        <div class="legend">1 point for each correct answer</div>
+        <button class="primary" id="next" type="button" disabled>Next animal</button>
+      </div>
+    </div>
+
+    <div id="end" class="end hidden">
+      <div class="kicker">Final score</div>
+      <h2>Animal vocabulary complete.</h2>
+      <div class="bigscore" id="finalScore"></div>
+      <p id="resultText"></p>
+
+      <div class="summary">
+        <div class="stat"><b id="correctCount">0</b>Correct</div>
+        <div class="stat"><b id="wrongCount">0</b>Missed</div>
+      </div>
+
+      <div class="note">
+        <strong>Tip:</strong> play again. The answer order changes each time, so repeated rounds become recognition practice rather than memorizing button positions.
+      </div>
+
+      <div style="margin-top:20px">
+        <button class="primary" id="restart" type="button">Play again</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>Vocabulary uses common Modern Standard Arabic animal names.</footer>
+</div>
+
+<script>
+const animals = [
+  {emoji:"🐶", ar:"كلب", en:"dog", tr:"kalb"},
+  {emoji:"🐱", ar:"قطة", en:"cat", tr:"qiṭṭa"},
+  {emoji:"🐭", ar:"فأر", en:"mouse", tr:"faʾr"},
+  {emoji:"🐹", ar:"هامستر", en:"hamster", tr:"hāmstar"},
+  {emoji:"🐰", ar:"أرنب", en:"rabbit", tr:"arnab"},
+  {emoji:"🦊", ar:"ثعلب", en:"fox", tr:"thaʿlab"},
+  {emoji:"🐻", ar:"دب", en:"bear", tr:"dubb"},
+  {emoji:"🐼", ar:"باندا", en:"panda", tr:"bāndā"},
+  {emoji:"🐨", ar:"كوالا", en:"koala", tr:"kuwālā"},
+  {emoji:"🐯", ar:"نمر", en:"tiger", tr:"nimr"},
+  {emoji:"🦁", ar:"أسد", en:"lion", tr:"asad"},
+  {emoji:"🐮", ar:"بقرة", en:"cow", tr:"baqara"},
+  {emoji:"🐷", ar:"خنزير", en:"pig", tr:"khinzīr"},
+  {emoji:"🐸", ar:"ضفدع", en:"frog", tr:"ḍifdaʿ"},
+  {emoji:"🐵", ar:"قرد", en:"monkey", tr:"qird"},
+  {emoji:"🐔", ar:"دجاجة", en:"chicken", tr:"dajāja"},
+  {emoji:"🐧", ar:"بطريق", en:"penguin", tr:"baṭrīq"},
+  {emoji:"🐦", ar:"طائر", en:"bird", tr:"ṭāʾir"},
+  {emoji:"🐤", ar:"كتكوت", en:"chick", tr:"katkūt"},
+  {emoji:"🦆", ar:"بطة", en:"duck", tr:"baṭṭa"},
+  {emoji:"🦅", ar:"نسر", en:"eagle", tr:"nasr"},
+  {emoji:"🦉", ar:"بومة", en:"owl", tr:"būma"},
+  {emoji:"🦇", ar:"خفاش", en:"bat", tr:"khuffāsh"},
+  {emoji:"🐺", ar:"ذئب", en:"wolf", tr:"dhiʾb"},
+  {emoji:"🐗", ar:"خنزير بري", en:"wild boar", tr:"khinzīr barri"},
+  {emoji:"🐴", ar:"حصان", en:"horse", tr:"ḥiṣān"},
+  {emoji:"🦄", ar:"وحيد القرن الخرافي", en:"unicorn", tr:"waḥīd al-qarn al-khurāfī"},
+  {emoji:"🐝", ar:"نحلة", en:"bee", tr:"naḥla"},
+  {emoji:"🐛", ar:"يرقة", en:"caterpillar", tr:"yaraqa"},
+  {emoji:"🦋", ar:"فراشة", en:"butterfly", tr:"farāsha"},
+  {emoji:"🐌", ar:"حلزون", en:"snail", tr:"ḥalazūn"},
+  {emoji:"🐞", ar:"دعسوقة", en:"ladybug", tr:"duʿsūqa"},
+  {emoji:"🐜", ar:"نملة", en:"ant", tr:"namla"},
+  {emoji:"🦟", ar:"بعوضة", en:"mosquito", tr:"baʿūḍa"},
+  {emoji:"🦗", ar:"جندب", en:"grasshopper", tr:"jundub"},
+  {emoji:"🕷️", ar:"عنكبوت", en:"spider", tr:"ʿankabūt"},
+  {emoji:"🦂", ar:"عقرب", en:"scorpion", tr:"ʿaqrab"},
+  {emoji:"🐢", ar:"سلحفاة", en:"turtle", tr:"sulḥufāh"},
+  {emoji:"🐍", ar:"ثعبان", en:"snake", tr:"thuʿbān"},
+  {emoji:"🦎", ar:"سحلية", en:"lizard", tr:"saḥliyya"},
+  {emoji:"🐙", ar:"أخطبوط", en:"octopus", tr:"ukhtubūṭ"},
+  {emoji:"🦑", ar:"حبار", en:"squid", tr:"ḥabbār"},
+  {emoji:"🦀", ar:"سلطعون", en:"crab", tr:"salaṭʿūn"},
+  {emoji:"🐠", ar:"سمكة", en:"fish", tr:"samaka"},
+  {emoji:"🐬", ar:"دلفين", en:"dolphin", tr:"dulfīn"},
+  {emoji:"🐳", ar:"حوت", en:"whale", tr:"ḥūt"},
+  {emoji:"🦈", ar:"قرش", en:"shark", tr:"qirsh"},
+  {emoji:"🐊", ar:"تمساح", en:"crocodile", tr:"timsāḥ"},
+  {emoji:"🐘", ar:"فيل", en:"elephant", tr:"fīl"},
+  {emoji:"🦒", ar:"زرافة", en:"giraffe", tr:"zarāfa"}
+];
+
+let order=[];
+let current=0;
+let score=0;
+let correctCount=0;
+let wrongCount=0;
+let locked=false;
+
+const $=id=>document.getElementById(id);
+const roundLabel=$("roundLabel");
+const bar=$("bar");
+const scoreEl=$("score");
+const animalEmoji=$("animalEmoji");
+const options=$("options");
+const feedback=$("feedback");
+const feedbackTitle=$("feedbackTitle");
+const feedbackBody=$("feedbackBody");
+const next=$("next");
+const game=$("game");
+const end=$("end");
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function startGame(){
+  order=shuffle(animals);
+  current=0;
+  score=0;
+  correctCount=0;
+  wrongCount=0;
+  scoreEl.textContent="0";
+  end.classList.add("hidden");
+  game.classList.remove("hidden");
+  render();
+}
+
+function getDistractors(correct){
+  const pool=animals.filter(a=>a.ar!==correct.ar);
+  return shuffle(pool).slice(0,3);
+}
+
+function render(){
+  locked=false;
+  next.disabled=true;
+  feedback.className="feedback hidden";
+  next.textContent=current===order.length-1 ? "See final score" : "Next animal";
+
+  const animal=order[current];
+  roundLabel.textContent=`Round ${current+1} of ${order.length}`;
+  bar.style.width=`${(current/order.length)*100}%`;
+  animalEmoji.textContent=animal.emoji;
+
+  const choices=shuffle([animal,...getDistractors(animal)]);
+  options.innerHTML="";
+
+  choices.forEach(choice=>{
+    const b=document.createElement("button");
+    b.type="button";
+    b.className="option";
+    b.innerHTML=`<span class="ar-choice" lang="ar">${choice.ar}</span>`;
+    b.addEventListener("click",()=>choose(choice,b,animal));
+    options.appendChild(b);
+  });
+}
+
+function choose(choice,button,animal){
+  if(locked) return;
+  locked=true;
+
+  [...options.children].forEach(b=>b.disabled=true);
+
+  if(choice.ar===animal.ar){
+    score++;
+    correctCount++;
+    scoreEl.textContent=score;
+    button.classList.add("correct");
+    feedback.className="feedback correct";
+    feedbackTitle.textContent="Correct!";
+  } else {
+    wrongCount++;
+    button.classList.add("wrong");
+    feedback.className="feedback wrong";
+    feedbackTitle.textContent="Not quite.";
+    [...options.children].forEach(b=>{
+      if(b.textContent.trim()===animal.ar) b.classList.add("correct");
+    });
+  }
+
+  feedbackBody.innerHTML=
+    `This is <strong>${animal.en}</strong>: ` +
+    `<span class="answer-ar" lang="ar">${animal.ar}</span> ` +
+    `(${animal.tr}).`;
+
+  feedback.classList.remove("hidden");
+  next.disabled=false;
+}
+
+next.addEventListener("click",()=>{
+  current++;
+  if(current<order.length){
+    render();
+  } else {
+    finish();
+  }
+});
+
+function finish(){
+  bar.style.width="100%";
+  game.classList.add("hidden");
+  end.classList.remove("hidden");
+
+  $("finalScore").textContent=`${score} / 50`;
+  $("correctCount").textContent=correctCount;
+  $("wrongCount").textContent=wrongCount;
+
+  const pct=score/50;
+  let msg;
+  if(pct>=.9) msg="Excellent — you have very strong recognition of common Arabic animal vocabulary.";
+  else if(pct>=.75) msg="Strong work — most of these animal words are already familiar.";
+  else if(pct>=.5) msg="Good start — another pass should make the unfamiliar animals stick quickly.";
+  else msg="Keep going — image-based repetition is an effective way to build fast vocabulary recognition.";
+  $("resultText").textContent=msg;
+}
+
+$("restart").addEventListener("click",startGame);
+
+startGame();
+</script>
+</body>
+</html>
